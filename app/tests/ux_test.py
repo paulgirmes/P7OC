@@ -11,7 +11,6 @@ from flask import url_for
 
 def test_app(client):
     assert client.get(url_for('index')).status_code == 200
-    assert b"hello world" in client.get(url_for('index')).data
 
 
 def test_liveserver(client):

@@ -3,10 +3,12 @@
 import json
 import os
 import re
+import requests
 import googlemaps
-import warnings
+import random
 
 if __name__ == "__main__":
+
     import sys
     dossier = os.path.dirname(os.path.abspath(__file__))
     while not dossier.endswith('app'):
@@ -16,83 +18,116 @@ if __name__ == "__main__":
         sys.path.append(dossier)
 from app.config import Config
 
-class Parser():
 
-    def filter(self, sentence):
-        result = re.findall(Config.filter, sentence)        
-        stopwords = []
-        with open(os.path.dirname(os.path.abspath(__file__))+"\\stopwords.json", encoding='utf8') as f:
-            data = json.load(f)
-        [stopwords.append(item) for item in data["stop_words"]]
-        lower_result = re.findall(Config.filter, sentence.lower())
-        for word in stopwords:
-            try :
-                result.pop(lower_result.index(word))
-                lower_result.pop(lower_result.index(word))
-            except:
-                pass
-        return result
-
-    def prioritize(self, w_to_test):
-        words = []
-        results = []
-        with open(os.path.dirname(os.path.abspath(__file__))+"\\stopwords.json", encoding='utf8') as f:
-            data = json.load(f)
-            [words.append(item) for item in data["priority_words"]]
-        
-        [results.append(w_to_test[w_to_test.index(word)+1]) for word in words if word in w_to_test]
-        for item in w_to_test:
-            x = "".join(re.findall("(^[A-Z][a-zA-Z]+)", item))
-            if x not in results and x != '':
-                results.append(x)
-        [results.append(item) for item in w_to_test if not item in results and not item in words]
-
-        return results
-
-
-class Place():
+class Request():
     
-    
-    def __init__(self, prioritized_results):
-        self.prioritized_results = prioritized_results
+    def __init__(self, text):
+        self.text_to_process = text
+        self.filtered_result = []
+        self.prioritized_result = []
         self.formatted_address = ""
-        self.place_id = ""
-        self.location = ""
+        self.location = {}
         self.name  = ""
         self.candidates = []
+    
+    
+    def filter(self):
+        try:
+            result = re.findall(Config.filter, self.text_to_process)        
+            stopwords = []
+            with open(os.path.dirname(os.path.abspath(__file__))+"\\stopwords.json", encoding='utf8') as f:
+                data = json.load(f)
+            [stopwords.append(item) for item in data["stop_words"]]
+            lower_result = re.findall(Config.filter, self.text_to_process.lower())
+            for word in stopwords:
+                try :
+                    result.pop(lower_result.index(word))
+                    lower_result.pop(lower_result.index(word))
+                except:
+                    pass
+        except:
+            raise
+        else:    
+            self.filtered_result = result
+            return 0
+
+    def prioritize(self):
+        words = []
+        results = []
+        try:
+            with open(os.path.dirname(os.path.abspath(__file__))+"\\stopwords.json", encoding='utf8') as f:
+                data = json.load(f)
+                [words.append(item) for item in data["priority_words"]]
+            [results.append(self.filtered_result[self.filtered_result.index(word)+1]) for word in words if word in self.filtered_result]
+            for item in self.filtered_result:
+                x = "".join(re.findall("(^[A-Z][a-zA-Z]+)", item))
+                if x not in results and x != '':
+                    results.append(x)        
+            [results.append(item) for item in self.filtered_result if not item in results and not item in words]
+        except:
+            raise
+        else:
+            self.prioritized_result = results
+            return 0
 
     def find_address(self):
         try:
             gmaps = googlemaps.Client(key=Config.google_api)
-            result = gmaps.find_place(input=(" ".join(self.prioritized_results)), input_type="textquery", 
-            language="french", fields=["name", "formatted_address", "place_id"])
-            x = len(result.get("candidates"))
-            if x == 1:
-                self.formatted_address=(result.get("candidates")[0]).get("formatted_address")
-                self.name = (result.get("candidates")[0]).get("name")
-                self.place_id = (result.get("candidates")[0]).get("place_id")
-                return 0
-            elif x > 1:
-                self.candidates = result.get("candidates")
-                return self.candidates
-            elif x==0:
-                return 1
+            i = len(self.prioritized_result)
+            while i > 0:
+                result = gmaps.find_place(input=(" ".join(self.prioritized_result[0:(i-1)])), input_type="textquery",language="french",
+                fields=["name", "formatted_address", "geometry/location"])
+                if result["status"] == "OK":
+                    x = len(result.get("candidates"))
+                    if x == 1:
+                        self.formatted_address=(result.get("candidates")[0]).get("formatted_address")
+                        self.name = (result.get("candidates")[0]).get("name")
+                        self.location = (result.get("candidates")[0]).get("location")
+                        return 0
+                    elif x > 1:
+                        self.candidates = result.get("candidates")
+                        return self.candidates
+                else:
+                    i-=1
+            return 1
         except:
             raise
-    
-    def find_coordinates(self):
-        try:
-            gmaps = googlemaps.Client(key=Config.google_api)
-            result = gmaps.geocode(self.formatted_address)
-            location = (result[0]).get("geometry").get("location")
-            self.location = "latitude "+str(location["lat"])+", longitude "+str(location["lng"])
-        except:
-            raise
-        else:
-            self.location = "latitude "+str(location["lat"])+", longitude "+str(location["lng"])
-            return 0
 
-prioritized_results = ["Ministère", "culture"]
-sult = Place(prioritized_results)
-print(sult.find_address())
-print(sult.formatted_address)
+    def find_wiki_content(self):
+        try:
+            S = requests.Session()
+
+            URL = "https://fr.wikipedia.org/w/api.php"
+
+            params = {
+                "format": "json",
+                "list": "geosearch",
+                "gscoord": (str(self.location["lat"])+"|"+str(self.location["lng"])),
+                "gslimit": "3",
+                "gsradius": "500",
+                "action": "query"
+            }
+
+            R = S.get(url=URL, params=params)
+            data = R.json()
+            places = data['query']['geosearch']
+            
+            if len(places)>0:
+                for place in places:
+                    print(place['title'])
+                i = random.randint(0, (len(places)-1))
+                page = places[i]['title']
+                U = S.get(url=URL, params={"action":"query","format":"json","prop":"extracts","titles":page,"formatversion":"2","exsentences":"2","exlimit":"1","explaintext":"1", "exsectionformat":"plain"})
+                return(U.json()["query"]["pages"][0]["extract"])
+            else:
+                with open(os.path.dirname(os.path.abspath(__file__))+"\\stopwords.json", encoding='utf8') as f:
+                    mots=json.load(f)
+                print(mots["no_wiki"][random.randint(0, (len(mots["no_wiki"])-1))])
+        except:
+            raise
+
+    def process(self):
+        return None 
+
+if __name__ == "__main__":
+    pass
