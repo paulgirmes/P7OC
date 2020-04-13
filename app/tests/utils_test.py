@@ -208,7 +208,7 @@ class Test_request():
 
         monkeypatch.setattr(googlemaps, "Client", self.mock_get4)
         assert setup_function.process() == {"status" : "NO_RESULTS", 
-                                        "adresses_answer" : "je n'arrives pas à te comprendres PARLES PLUS FORT !!!",
+                                        "adresses_answer" : "je n'arrive pas à te comprendre PARLES PLUS FORT !!!",
                                         "wiki_answer" : "", 
                                         "coordinates" : {}}
                                         

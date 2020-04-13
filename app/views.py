@@ -1,7 +1,8 @@
 import json
+from flask import Flask
+app = Flask(__name__)
 from flask import request
 from flask import render_template
-from app import app
 from app.utils.utils import Request
 from . import config
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
@@ -16,7 +17,7 @@ def index():
 @app.route('/question', methods=['POST'])
 def question():
     answer = Request(request.form['text'])
-    if answer.process() == 0:
-        return json.dumps({'status':'OK','answer':answer.adress, 'lng':answer.coordinates['lng'], 'lat':answer.coordinates['lat']})
-    else:
-        return json.dumps({'status':'NOK','answer':"précise ta question"})
+    try:
+        return json.dumps(answer.process())
+    except:
+        return json.dumps({'status':'NOK','adresses_answer':"Problème dans le traitement des données"})

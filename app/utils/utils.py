@@ -35,18 +35,15 @@ class Request():
     
     def filter(self):
         try:
-            result = re.findall(Config.filter, self.text_to_process)        
-            stopwords = []
+            result = re.findall(Config.filter, self.text_to_process)    
+            stopwords = set()
             with open(os.path.dirname(os.path.abspath(__file__))+"\\stopwords.json", encoding='utf8') as f:
                 data = json.load(f)
-            [stopwords.append(item) for item in data["stop_words"]]
-            lower_result = re.findall(Config.filter, self.text_to_process.lower())
-            for word in stopwords:
-                try :
-                    result.pop(lower_result.index(word))
-                    lower_result.pop(lower_result.index(word))
-                except:
-                    pass
+            [stopwords.add(item) for item in data["stop_words"]]
+            words_to_remove = []
+            [words_to_remove.append(word) for word in result if word in stopwords or word.lower() in stopwords]
+            [result.remove(word) for word in words_to_remove]
+        
         except:
             return 1
         else:    
@@ -73,27 +70,28 @@ class Request():
             return 0
 
     def find_address(self):
-        try:
             gmaps = googlemaps.Client(key=Config.google_api)
-            i = len(self.prioritized_result)
-            while i > 0:
-                result = gmaps.find_place(input=(" ".join(self.prioritized_result[0:(i-1)])), input_type="textquery",language="french",
-                fields=["name", "formatted_address", "geometry/location"])
-                if result["status"] == "OK":
-                    x = len(result["candidates"])
-                    if x == 1:
-                        self.formatted_address= str(result["candidates"][0]["formatted_address"])
-                        self.name = result["candidates"][0]["name"]
-                        self.location = result["candidates"][0]["geometry"]["location"]
-                        return 0
-                    elif x > 1:
-                        self.candidates =  result["candidates"]
-                        return list([candidate["name"]+" au "+candidate["formatted_address"] for candidate in result["candidates"]])
-                else:
-                    i-=1
+            to_analyse = list(self.prioritized_result)
+            for word in self.prioritized_result:    
+                try:
+                    result = gmaps.find_place(input=(" ".join(to_analyse)), input_type="textquery",language="french",
+                    fields=["name", "formatted_address", "geometry/location"])
+                    if result["status"] == "OK":
+                        x = len(result["candidates"])
+                        if x == 1:
+                            self.formatted_address= str(result["candidates"][0]["formatted_address"])
+                            self.name = result["candidates"][0]["name"]
+                            self.location = result["candidates"][0]["geometry"]["location"]
+                            return 0
+                        elif x > 1:
+                            self.candidates =  result["candidates"]
+                            return list([candidate["name"]+" au "+candidate["formatted_address"] for candidate in result["candidates"]])
+                    else:
+                        to_analyse.pop(-1)
+                except:
+                    return 1
             return 1
-        except:
-            return 1
+                
 
     def find_wiki_content(self):
         try:
@@ -118,7 +116,13 @@ class Request():
             i = random.randint(0, (len(places)-1))
             page = places[i]['title']
             U = S.get(url=URL, params={"action":"query","format":"json","prop":"extracts","titles":page,"formatversion":"2","exsentences":"2","exlimit":"1","explaintext":"1", "exsectionformat":"plain"})
-            self.wiki = (U.json()["query"]["pages"][0]["extract"]+" Plus d'informations ici https://en.wikipedia.org/wiki/"+(U.json()["query"]["pages"][0]["title"]).replace(" ", "_"))
+            with open(os.path.dirname(os.path.abspath(__file__))+"\\stopwords.json", encoding='utf8') as f:
+                mots=json.load(f)
+            
+            self.wiki = mots["Wiki"][random.randint(0, (len(mots["Wiki"])-1))]+\
+                            (U.json()["query"]["pages"][0]["extract"])+" Plus d'informations ici \
+                            <a href='https://en.wikipedia.org/wiki/"+(U.json()["query"]["pages"][0]["title"]).replace(" ", "_")+"'>"+\
+                            "https://en.wikipedia.org/wiki/"+(U.json()["query"]["pages"][0]["title"]).replace(" ", "_")+"</a>"
             return 0
         except:
             with open(os.path.dirname(os.path.abspath(__file__))+"\\stopwords.json", encoding='utf8') as f:
@@ -129,8 +133,7 @@ class Request():
     def process(self):
 
         if self.filter() == 0 and self.prioritize() == 0:
-            self.__status = "PARSER_OK"   
-            self.__status = "NOT_PROCESSED"
+            self.__status = "PARSER_OK"
         else:
             self.__status = "NOT_PROCESSED"
             return self.return_format("no_results")

@@ -17,6 +17,8 @@
             <p>Mais appuie fort sur ton clavier, il entend très mal !</p>
         </header>
         <section class="container">
+            <div id="dialog">
+            </div>   
             <div class="row">
                 <div class="col-sm-10 col-md-10 col-lg-9">
                 <form class="well" id="question">
@@ -31,19 +33,18 @@
                         <button id="send" class="btn btn-primary pull" type="submit" onsubmit="return false">Envoyer</button>
                         </div>
                         <div class="col-sm-6">
-                        <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                        </div>
+                            <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                            </div>
                         </div>
                     </div>   
                     </fieldset>
                 </form>                                        
                 </div>
-            </div>
-            <div id="dialog">
-            </div>    
+            </div>   
             <div id="gmap" class="row">
-            <div id="map" class=col></div>
+                <div id="map" class=col>
+                </div>
             </div>
             
         </section>
