@@ -51,7 +51,7 @@ class Maps_MockResponse3:
                 "geometry" : {"location" : {"lat" : -33.8599358,"lng" : 151.2090295},
                 "viewport" : {"northeast" : {"lat" : -33.85824767010727,"lng" : 151.2102470798928},
                 "southwest" : {"lat" : -33.86094732989272,"lng" : 151.2075474201073}}},
-                "name" : "Museum of Contemporary Art Australia","opening_hours" : {"open_now" : False,"weekday_text" : []},
+                "name" : "OpenClassrooms","opening_hours" : {"open_now" : False,"weekday_text" : []},
                 "photos" : [{"height" : 2268,"html_attributions" : ["\u003ca href=\"https://maps.google.com/maps/contrib/113202928073475129698/photos\"\u003eEmily Zimny\u003c/a\u003e"],
                 "photo_reference" : "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
                 "width" : 4032}],"rating" : 4.3},{"formatted_address" : "7 Cité Paradis, 75010 Paris, France",
@@ -62,6 +62,16 @@ class Maps_MockResponse3:
                 "photos" : [{"height" : 2268,"html_attributions" : ["\u003ca href=\"https://maps.google.com/maps/contrib/113202928073475129698/photos\"\u003eEmily Zimny\u003c/a\u003e"],
                 "photo_reference" : "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
                 "width" : 4032}],"rating" : 4.3}],"debug_log" : {"line" : []},"status" : "OK"}
+
+class Maps_MockResponse4:
+   
+    @staticmethod
+    def Client(*arg, **kargs):
+        pass
+    @staticmethod
+    def find_place(*arg, **kargs):
+        return {"candidates" : [],"debug_log" : {"line" : []},"status" : "NO_RESULTS"}
+
 
 class Wiki_MockResponse():
     
@@ -98,11 +108,43 @@ class Wiki_MockResponse():
         else:
             return {"batchcomplete": "true","query": {"normalized": [{"fromencoded": "false","from": "Pet_door","to": "Pet door"}],
                     "pages": [{"pageid": 3276454,"ns": 0,"title": "Pet door",
-                    "extract": "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door.  Originally simple holes, the modern form is a hinged and often spring-loaded panel or flexible flap, and some are electronically controlled.  They offer a degree of protection against wind, rain, and larger-bodied intruders entering the dwelling. Similar hatches can let dogs through fences at stiles. A related concept is the pet gate, which is easy for humans to open but acts as a secure pet barrier, as well as the automated left- or right-handed pet doors.\n\n\n== Purpose ==\nA pet door is found to be convenient by many owners of companion animals, especially dogs and cats, because it lets the pets come and go as they please, reducing the need for pet-owners to let or take the pet outside manually, and curtailing unwanted behaviour such as loud vocalisation to be let outside, scratching on doors or walls, and (especially in the case of dogs) excreting in the house. They also help to ensure that a pet left outdoors can safely get back into the house in the case of inclement weather.\n\n\n== Features ==\n\nThe simplest type are bottom-weighted flaps hung from the top of the opening, which swing shut on their own, but may be spring-aided to increase wind resistance. These flaps often feature magnets around the edges to help keep the door closed against weather and wind. Some pet doors have side-mounted hinges and swing open like saloon doors."}]}}
+                    "extract": "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door."}]}}
 
 
-class Test_parser():
-    
+class Test_request():
+
+    formatted_address = [{"formatted_address" : "7 Cité Paradis, 75010 Paris, France",
+                "geometry" : {"location" : {"lat" : -33.8599358,"lng" : 151.2090295},
+                "viewport" : {"northeast" : {"lat" : -33.85824767010727,"lng" : 151.2102470798928},
+                "southwest" : {"lat" : -33.86094732989272,"lng" : 151.2075474201073}}},
+                "name" : "OpenClassrooms","opening_hours" : {"open_now" : False,"weekday_text" : []},
+                "photos" : [{"height" : 2268,"html_attributions" : ["\u003ca href=\"https://maps.google.com/maps/contrib/113202928073475129698/photos\"\u003eEmily Zimny\u003c/a\u003e"],
+                "photo_reference" : "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
+                "width" : 4032}],"rating" : 4.3},{"formatted_address" : "7 Cité Paradis, 75010 Paris, France",
+                "geometry" : {"location" : {"lat" : -33.8599358,"lng" : 151.2090295},
+                "viewport" : {"northeast" : {"lat" : -33.85824767010727,"lng" : 151.2102470798928},
+                "southwest" : {"lat" : -33.86094732989272,"lng" : 151.2075474201073}}},
+                "name" : "Museum of Contemporary Art Australia","opening_hours" : {"open_now" : False,"weekday_text" : []},
+                "photos" : [{"height" : 2268,"html_attributions" : ["\u003ca href=\"https://maps.google.com/maps/contrib/113202928073475129698/photos\"\u003eEmily Zimny\u003c/a\u003e"],
+                "photo_reference" : "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
+                "width" : 4032}],"rating" : 4.3}]
+    candidates = list([x["name"]+" au "+ x["formatted_address"] for x in formatted_address])
+
+    @pytest.fixture(scope="class")
+    def setup_function(self, request):
+        r = utils.Request("Salut GrandPy ! Est-ce que tu connais l'adresse d'OpenClassrooms ?")
+        return r
+
+    def mock_get(self, *args,**kargs):
+            return Maps_MockResponse()
+    def mock_get2(self, *args,**kargs):
+        return Maps_MockResponse2()
+    def mock_get3(self, *args,**kargs):
+            return Maps_MockResponse3()
+    def wikimock_get(self, *args,**kargs):   
+            return Wiki_MockResponse()
+    def mock_get4(self, *args,**kargs):
+            return Maps_MockResponse4()
 
     def test_filter(self):
         test_phrases = ["Salut GrandPy ! Est-ce que tu connais l'adresse d'OpenClassrooms ?",
@@ -126,64 +168,59 @@ class Test_parser():
     def test_find_address(self, monkeypatch):
         expected = "7 Cité Paradis, 75010 Paris, France"
 
-        def mock_get(*args,**kargs):
-            return Maps_MockResponse()
-        def mock_get2(*args,**kargs):
-            return Maps_MockResponse2()
-        def mock_get3(*args,**kargs):
-            return Maps_MockResponse3()
-
-        monkeypatch.setattr(googlemaps, "Client", mock_get)
+        monkeypatch.setattr(googlemaps, "Client", self.mock_get)
         x = utils.Request("")
         x.prioritized_result=["OpenClassrooms", "Salut", "GrandPy", "connais"]
         x.find_address()
         print(x.formatted_address)
         assert x.find_address() == 0
         assert x.formatted_address ==  expected
+        assert x.location == {"lat" : -33.8599358,"lng" : 151.2090295}
 
-        monkeypatch.setattr(googlemaps, "Client", mock_get2)
+        monkeypatch.setattr(googlemaps, "Client", self.mock_get2)
         x = utils.Request("")
         x.prioritized_result=["OpenClassrooms", "Salut", "GrandPy", "connais"]
         x.find_address()
-        print(x.formatted_address)
         assert x.find_address() == 1
         assert x.formatted_address ==  ""
 
-        monkeypatch.setattr(googlemaps, "Client", mock_get3)
+        monkeypatch.setattr(googlemaps, "Client", self.mock_get3)
         x = utils.Request("")
         x.prioritized_result=["OpenClassrooms", "Salut", "GrandPy", "connais"]
         x.find_address()
-        print(x.formatted_address)
-        assert x.find_address() == [{"formatted_address" : "7 Cité Paradis, 75010 Paris, France",
-                "geometry" : {"location" : {"lat" : -33.8599358,"lng" : 151.2090295},
-                "viewport" : {"northeast" : {"lat" : -33.85824767010727,"lng" : 151.2102470798928},
-                "southwest" : {"lat" : -33.86094732989272,"lng" : 151.2075474201073}}},
-                "name" : "Museum of Contemporary Art Australia","opening_hours" : {"open_now" : False,"weekday_text" : []},
-                "photos" : [{"height" : 2268,"html_attributions" : ["\u003ca href=\"https://maps.google.com/maps/contrib/113202928073475129698/photos\"\u003eEmily Zimny\u003c/a\u003e"],
-                "photo_reference" : "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
-                "width" : 4032}],"rating" : 4.3},{"formatted_address" : "7 Cité Paradis, 75010 Paris, France",
-                "geometry" : {"location" : {"lat" : -33.8599358,"lng" : 151.2090295},
-                "viewport" : {"northeast" : {"lat" : -33.85824767010727,"lng" : 151.2102470798928},
-                "southwest" : {"lat" : -33.86094732989272,"lng" : 151.2075474201073}}},
-                "name" : "Museum of Contemporary Art Australia","opening_hours" : {"open_now" : False,"weekday_text" : []},
-                "photos" : [{"height" : 2268,"html_attributions" : ["\u003ca href=\"https://maps.google.com/maps/contrib/113202928073475129698/photos\"\u003eEmily Zimny\u003c/a\u003e"],
-                "photo_reference" : "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
-                "width" : 4032}],"rating" : 4.3}]
+        assert x.find_address() == self.candidates
 
-def test_wiki(monkeypatch):
+    def test_wikiself(self, monkeypatch, setup_function):
+            
+        monkeypatch.setattr(requests, "Session", self.wikimock_get)
+        setup_function.location = {"lat" : -33.8599358,"lng" : 151.2090295}
+        assert setup_function.find_wiki_content() == 0
+        assert setup_function.wiki == "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door. Plus d'informations ici https://en.wikipedia.org/wiki/Pet_door"
+        setup_function.location = {}
+        setup_function.wiki = ""
 
-    def wikimock_get(*args,**kargs):   
-        return Wiki_MockResponse()
-    monkeypatch.setattr(requests, "Session", wikimock_get)
-    r = utils.Request("bla")
-    r.location = {"lat" : -33.8599358,"lng" : 151.2090295}
-    assert r.find_wiki_content() == "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door.  Originally simple holes, the modern form is a hinged and often spring-loaded panel or flexible flap, and some are electronically controlled.  They offer a degree of protection against wind, rain, and larger-bodied intruders entering the dwelling. Similar hatches can let dogs through fences at stiles. A related concept is the pet gate, which is easy for humans to open but acts as a secure pet barrier, as well as the automated left- or right-handed pet doors.\n\n\n== Purpose ==\nA pet door is found to be convenient by many owners of companion animals, especially dogs and cats, because it lets the pets come and go as they please, reducing the need for pet-owners to let or take the pet outside manually, and curtailing unwanted behaviour such as loud vocalisation to be let outside, scratching on doors or walls, and (especially in the case of dogs) excreting in the house. They also help to ensure that a pet left outdoors can safely get back into the house in the case of inclement weather.\n\n\n== Features ==\n\nThe simplest type are bottom-weighted flaps hung from the top of the opening, which swing shut on their own, but may be spring-aided to increase wind resistance. These flaps often feature magnets around the edges to help keep the door closed against weather and wind. Some pet doors have side-mounted hinges and swing open like saloon doors."
-        
-        
-    
-def test_process():
-        r = utils.Request("bla")
-        assert r.process() == None
+    def test_process(self, monkeypatch, setup_function):
+        monkeypatch.setattr(googlemaps, "Client", self.mock_get3)
+        assert setup_function.process() == {"status" : "SEVERAL_ADRESS",
+                                        "adresses_answer" : "j'ai plusieurs idées, peux-tu me préciser le nom et l'adresse que tu veux trouver ?" +" "+", ".join(self.candidates),
+                                        "wiki_answer" : "", 
+                                        "coordinates" : {}}
+
+        monkeypatch.setattr(googlemaps, "Client", self.mock_get4)
+        assert setup_function.process() == {"status" : "NO_RESULTS", 
+                                        "adresses_answer" : "je n'arrives pas à te comprendres PARLES PLUS FORT !!!",
+                                        "wiki_answer" : "", 
+                                        "coordinates" : {}}
+                                        
+        monkeypatch.setattr(googlemaps, "Client", self.mock_get)
+        monkeypatch.setattr(requests, "Session", self.wikimock_get)
+        assert setup_function.process() == {"status" : "OK",
+                                        "adresses_answer" : "l'adresse est la suivante : 7 Cité Paradis, 75010 Paris, France",
+                                        "wiki_answer" : "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door. Plus d'informations ici https://en.wikipedia.org/wiki/Pet_door",
+                                        "coordinates" : {"lat" : -33.8599358,"lng" : 151.2090295}}
+
+
+
 
 
     

@@ -11,5 +11,12 @@
 "rue", "endroit","habitation", "résidence", "coordonnées", "domicile", "siège", "demeure", 
 "chez-soi", "foyer", "home", "appartement","logement", "logis", "résidence", "pénates",
 "toit", "intérieur", "séjour", "manoir", "abri", "bercail", "gîte","immeuble","information", "résidence"],
-"no_wiki":["Je croyais me souvenir d 'un détail à propos de cet endrois mais...........\n.................non!","Attends, je penses que j'ai déjà été là mais ma mémoire me joue des tours...\nJe penses qe je vais aller faire la sièste","Pourrais-tu me dire pourquoi à chaque fois que je cherche à me rappeller quelque chose, ma mémoire me fais défaut. C'était quoi la question déjà ?","La peste soit de ma mémoire je suis sur de connaitre cet endroit ! Bon sinon, la famille ? ça va?"]
+"no_wiki":["Je croyais me souvenir d 'un détail à propos de cet endrois mais...........\n.................non!",
+"Attends, je penses que j'ai déjà été là mais ma mémoire me joue des tours...\nJe penses qe je vais aller faire la sièste",
+"Pourrais-tu me dire pourquoi à chaque fois que je cherche à me rappeller quelque chose, ma mémoire me fais défaut. C'était quoi la question déjà ?",
+"La peste soit de ma mémoire je suis sur de connaitre cet endroit ! Bon sinon, la famille ? ça va?"],
+"Wiki": ["Ne t'ais-je pas déjà parlé de cet endroit : "],
+"result_ok": ["l'adresse est la suivante :"],
+"Several_results":["j'ai plusieurs idées, peux-tu me préciser le nom et l'adresse que tu veux trouver ?"],
+"no_results":["je n'arrives pas à te comprendres PARLES PLUS FORT !!!"]
 }
