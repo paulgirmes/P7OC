@@ -31,7 +31,10 @@ function question(text)
     $(".btn").click(function(event)
         {
         event.preventDefault();
-        $("#dialog").prepend(question($("#textarea").val()));
+        var reg = new RegExp(/[<>!$'"/*%$£=+#{};\\&~]/, "g");
+        var newchain = $("#textarea").val();
+        newchain = newchain.replace(reg, " ");
+        $("#dialog").prepend(question(newchain));
         $("#map2").hide(600);
         $("#map2").remove();
         $("#textarea").hide(600);
