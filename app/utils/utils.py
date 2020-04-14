@@ -85,7 +85,7 @@ class Request():
                             return 0
                         elif x > 1:
                             self.candidates =  result["candidates"]
-                            return list([candidate["name"]+" au "+candidate["formatted_address"] for candidate in result["candidates"]])
+                            return list([candidate["name"]+" situé "+candidate["formatted_address"] for candidate in result["candidates"]])
                     else:
                         to_analyse.pop(-1)
                 except:
@@ -153,7 +153,7 @@ class Request():
 
         else :
             self.__status = "SEVERAL_ADRESS"
-            return self.return_format("Several_results",(", ".join(x)))
+            return self.return_format("Several_results",(" ou: ".join(x)+" ?"))
     
     def return_format(self, json_key, *args):
         with open(os.path.dirname(os.path.abspath(__file__))+"\\stopwords.json", encoding='utf8') as f:
