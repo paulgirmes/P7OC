@@ -339,7 +339,7 @@ class Wiki_search:
                 + " Plus d'informations ici <a href='https://fr.wikipedia.org/wiki/"
                 + (U.json()["query"]["pages"][0]["title"]).replace(" ", "_")
                 + "'>"
-                + "https://en.wikipedia.org/wiki/"
+                + "https://fr.wikipedia.org/wiki/"
                 + (U.json()["query"]["pages"][0]["title"]).replace(" ", "_")
                 + "</a>"
             )

@@ -323,7 +323,7 @@ class Test_wiki:
         wiki = search_request.Wiki_search({"lat": -33.8599358, "lng": 151.2090295}, 500, "stopwords.json")
         assert wiki.find_wiki_content() == 0
         assert (
-            "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door. Plus d'informations ici <a href='https://fr.wikipedia.org/wiki/Pet_door'>https://en.wikipedia.org/wiki/Pet_door</a>"
+            "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door. Plus d'informations ici <a href='https://fr.wikipedia.org/wiki/Pet_door'>https://fr.wikipedia.org/wiki/Pet_door</a>"
             in wiki.wiki_text
         )
 
