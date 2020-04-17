@@ -1,21 +1,19 @@
 import json
 from flask import Flask
-from app.utils.utils import Request
+from flask import url_for
+from app.models.search_request import Request
 from . import config
+
 app = Flask(__name__)
 from flask import request
 from flask import render_template
 
 
-
-
 @app.route("/")
 @app.route("/index")
 def index():
-    coordonees = {"lat": "48.8747265", "long": "2.3505517"}
     key = {"key": config.Config.google_api}
-    position = {"lat": coordonees.get("lat"), "long": coordonees.get("long")}
-    return render_template("index.html", title="home", key=key, position=position)
+    return render_template("index.html", title="home", key=key)
 
 
 @app.route("/question", methods=["POST"])
