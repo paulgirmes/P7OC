@@ -7,61 +7,110 @@ import requests
 import googlemaps
 import random
 
-if __name__ == "__main__":
-
-    import sys
-
-    dossier = os.path.dirname(os.path.abspath(__file__))
-    while not dossier.endswith("app"):
-        dossier = os.path.dirname(dossier)
-    dossier = os.path.dirname(dossier)
-    if dossier not in sys.path:
-        sys.path.append(dossier)
 from app.config import Config
 
 
 class Request:
-    def __init__(self, text):
+
+    def __init__(self, text): 
+        self.__status = "NOT_PROCESSED"
         self.text_to_process = text
+
+    def process(self):
+        parser = Parser(self.text_to_process, Config.filter, "stopwords.json", "stopwords.json")
+        if parser.filter() == 0 and parser.prioritize() == 0:
+            self.__status = "PARSER_OK"
+            address = Gmap_address(parser.prioritized_result, Config.google_api)
+            address_return = address.find_address()
+            
+            if address_return == 0:
+                self.__status = "ADDRESS_OK"
+                wiki = Wiki_search(address.location, "500")
+                
+                if wiki.find_wiki_content() == 0:
+                    self.__status = "OK"
+                    return self.return_format("stopwords.json","result_ok", wiki.wiki_text, address.location, address.formatted_address)
+                else:
+                    self.__status = "OK_WIKI_FAILED"
+                    return self.return_format("stopwords.json","result_ok", wiki.wiki_text, address.location,address.formatted_address)
+            
+            elif address_return == 1:
+                self.__status = "NO_RESULTS"
+                return self.return_format("stopwords.json","no_results", "", {})
+
+            else:
+                self.__status = "SEVERAL_ADRESS"
+                return self.return_format("stopwords.json","Several_results", "", {},(" ou: ".join(address_return) + " ?"))
+        else:
+            self.__status = "NOT_PROCESSED"
+            return self.return_format("stopwords.json","no_results", "", {})
+        
+
+    def return_format(self, json_file, json_key, wiki, location, *args):
+        with open(
+            os.path.dirname(os.path.abspath(__file__)) + "\\stopwords.json",
+            encoding="utf8",
+        ) as f:
+            data = json.load(f)
+
+        if len(args) == 0:
+            return {
+                "status": self.__status,
+                "adresses_answer": random.choice(data[str(json_key)]),
+                "wiki_answer": wiki,
+                "coordinates": location,
+            }
+        else:
+            return {
+                "status": self.__status,
+                "adresses_answer": random.choice(data[str(json_key)])
+                + " "
+                + ", ".join([str(arg) for arg in args]),
+                "wiki_answer": wiki,
+                "coordinates": location,
+            }
+
+
+class Parser:
+
+    def __init__(self, text_to_parse, regex, stopwords_file_Json, priority_words_file_Json=None):
+        self.text_to_parse = text_to_parse
         self.filtered_result = []
         self.prioritized_result = []
-        self.formatted_address = ""
-        self.location = {}
-        self.name = ""
-        self.candidates = []
-        self.__status = "NOT_PROCESSED"
-        self.wiki = ""
+        self.stopwords = stopwords_file_Json
+        self.priortywords = priority_words_file_Json
+        self.regex = regex
 
     def filter(self):
-        try:
-            result = re.findall(Config.filter, self.text_to_process)
-            stopwords = set()
-            with open(
-                os.path.dirname(os.path.abspath(__file__)) + "\\stopwords.json",
-                encoding="utf8",
-            ) as f:
-                data = json.load(f)
-            [stopwords.add(item) for item in data["stop_words"]]
-            words_to_remove = []
-            [
-                words_to_remove.append(word)
-                for word in result
-                if word in stopwords or word.lower() in stopwords
-            ]
-            [result.remove(word) for word in words_to_remove]
+            try:
+                result = re.findall(self.regex, self.text_to_parse)
+                stopwords = set()
+                with open(
+                    os.path.dirname(os.path.abspath(__file__)) + "\\"+self.stopwords,
+                    encoding="utf8",
+                ) as f:
+                    data = json.load(f)
+                [stopwords.add(item) for item in data["stop_words"]]
+                words_to_remove = []
+                [
+                    words_to_remove.append(word)
+                    for word in result
+                    if word in stopwords or word.lower() in stopwords
+                ]
+                [result.remove(word) for word in words_to_remove]
 
-        except:
-            return 1
-        else:
-            self.filtered_result = result
-            return 0
+            except:
+                return 1
+            else:
+                self.filtered_result = result
+                return 0
 
     def prioritize(self):
         words = []
         results = []
         try:
             with open(
-                os.path.dirname(os.path.abspath(__file__)) + "\\stopwords.json",
+                os.path.dirname(os.path.abspath(__file__)) + "\\"+self.priortywords,
                 encoding="utf8",
             ) as f:
                 data = json.load(f)
@@ -88,10 +137,22 @@ class Request:
             self.prioritized_result = results
             return 0
 
+
+class Gmap_address:
+
+    def __init__(self, word_list, api_key):
+        self.word_list = word_list
+        self.formatted_address = ""
+        self.location = {}
+        self.name = ""
+        self.candidates = []
+        self.api_key = api_key
+    
     def find_address(self):
-        gmaps = googlemaps.Client(key=Config.google_api)
-        to_analyse = list(self.prioritized_result)
-        for word in self.prioritized_result:
+        gmaps = googlemaps.Client(key = self.api_key)
+        to_analyse = list(self.word_list)
+        i=0
+        while i < len(self.word_list):
             try:
                 result = gmaps.find_place(
                     input=(" ".join(to_analyse)),
@@ -122,7 +183,17 @@ class Request:
                     to_analyse.pop(-1)
             except:
                 return 1
-        return 1
+            i += 1    
+        return 1    
+
+
+class Wiki_search:
+
+
+    def __init__(self, coordinates, search_radius_m):
+        self.location = coordinates
+        self.wiki_text = ""
+        self.radius = search_radius_m
 
     def find_wiki_content(self):
         try:
@@ -137,7 +208,7 @@ class Request:
                     str(self.location["lat"]) + "|" + str(self.location["lng"])
                 ),
                 "gslimit": "3",
-                "gsradius": "500",
+                "gsradius": self.radius,
                 "action": "query",
             }
 
@@ -167,11 +238,10 @@ class Request:
             ) as f:
                 mots = json.load(f)
 
-            self.wiki = (
+            self.wiki_text = (
                 mots["Wiki"][random.randint(0, (len(mots["Wiki"]) - 1))]
                 + (U.json()["query"]["pages"][0]["extract"])
-                + " Plus d'informations ici \
-                            <a href='https://en.wikipedia.org/wiki/"
+                + " Plus d'informations ici <a href='https://en.wikipedia.org/wiki/"
                 + (U.json()["query"]["pages"][0]["title"]).replace(" ", "_")
                 + "'>"
                 + "https://en.wikipedia.org/wiki/"
@@ -188,54 +258,5 @@ class Request:
             self.wiki = mots["no_wiki"][random.randint(0, (len(mots["no_wiki"]) - 1))]
             return 1
 
-    def process(self):
-
-        if self.filter() == 0 and self.prioritize() == 0:
-            self.__status = "PARSER_OK"
-        else:
-            self.__status = "NOT_PROCESSED"
-            return self.return_format("no_results")
-
-        x = self.find_address()
-        if x == 0:
-            self.__status = "ADDRESS_OK"
-            if self.find_wiki_content() == 0:
-                self.__status = "OK"
-                return self.return_format("result_ok", self.formatted_address)
-            else:
-                self.__status = "OK_WIKI_FAILED"
-                return self.return_format("result_ok", self.formatted_address)
-        elif x == 1:
-            self.__status = "NO_RESULTS"
-            return self.return_format("no_results")
-
-        else:
-            self.__status = "SEVERAL_ADRESS"
-            return self.return_format("Several_results", (" ou: ".join(x) + " ?"))
-
-    def return_format(self, json_key, *args):
-        with open(
-            os.path.dirname(os.path.abspath(__file__)) + "\\stopwords.json",
-            encoding="utf8",
-        ) as f:
-            data = json.load(f)
-        if len(args) == 0:
-            return {
-                "status": self.__status,
-                "adresses_answer": random.choice(data[str(json_key)]),
-                "wiki_answer": self.wiki,
-                "coordinates": self.location,
-            }
-        else:
-            return {
-                "status": self.__status,
-                "adresses_answer": random.choice(data[str(json_key)])
-                + " "
-                + ", ".join([str(arg) for arg in args]),
-                "wiki_answer": self.wiki,
-                "coordinates": self.location,
-            }
-
-
 if __name__ == "__main__":
-    pass
+   pass

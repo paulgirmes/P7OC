@@ -1,11 +1,12 @@
 import json
 from flask import Flask
-
+from app.utils.utils import Request
+from . import config
 app = Flask(__name__)
 from flask import request
 from flask import render_template
-from app.utils.utils import Request
-from . import config
+
+
 
 
 @app.route("/")
@@ -26,6 +27,6 @@ def question():
         return json.dumps(
             {
                 "status": "NOK",
-                "adresses_answer": "Problème dans le traitement des données",
+                "adresses_answer": "OUPS ! , un Problème est survenu dans le traitement des données",
             }
         )
