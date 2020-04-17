@@ -336,7 +336,7 @@ class Wiki_search:
             self.wiki_text = (
                 mots["Wiki"][random.randint(0, (len(mots["Wiki"]) - 1))]
                 + (U.json()["query"]["pages"][0]["extract"])
-                + " Plus d'informations ici <a href='https://en.wikipedia.org/wiki/"
+                + " Plus d'informations ici <a href='https://fr.wikipedia.org/wiki/"
                 + (U.json()["query"]["pages"][0]["title"]).replace(" ", "_")
                 + "'>"
                 + "https://en.wikipedia.org/wiki/"

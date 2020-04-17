@@ -1,3 +1,5 @@
+// map initialisation
+// + dummy map loading (working around maps display pb when loading it later)
 var map;
 function initMap()
     {
@@ -10,7 +12,9 @@ $("#map").hide();
 $("#question").trigger("reset");
 $(".spinner-border").hide();
 
-function answer(text) 
+function answer(text)
+// takes a string in entry (must be DE XSS'd for security sakes!)
+// returns a  DOM elm't to display the text)
     {
     return '<div class="col-sm-10 col-md-10 col-lg-9 bg-white rounded shadow-sm">\
             <div class="media text-muted pt-3">\
@@ -20,6 +24,7 @@ function answer(text)
     }
 
 function question(text)
+// same as funct answer but without the icon
     {
     return '<div class="col-sm-10 col-md-10 col-lg-9 bg-white rounded shadow-sm">\
             <div class="media text-muted pt-3">\
@@ -31,15 +36,19 @@ function question(text)
     $(".btn").click(function(event)
         {
         event.preventDefault();
+        //filter against XSS
         var reg = new RegExp(/[<>!$'"/*%$£=+#{};\\&~]/, "g");
         var newchain = $("#textarea").val();
         newchain = newchain.replace(reg, " ");
+
         $("#dialog").prepend(question(newchain));
         $("#map2").hide(600);
         $("#map2").remove();
         $("#textarea").hide(600);
         $(".btn").hide(600);
         $(".spinner-border").show(600);
+        //sending request to server if answer status is ok add the answwer map and the wiki,
+        //else only add the answer from server
         $.ajax(
             {
             url: '/question',
@@ -67,8 +76,6 @@ function question(text)
                     setTimeout(()=>
                         {
                         $("#dialog").prepend(answer(answer_obj.wiki_answer))
-                        // $("#dialog:last").hide();
-                        // $("#dialog:last").show(400);
                         },5000)
                     }
                 else
