@@ -3,81 +3,154 @@ import googlemaps
 import pytest
 import requests
 
-if __name__ == "__main__":
+import sys
 
-    import sys
+# dossier = os.path.dirname(os.path.abspath(__file__))
+# while not dossier.endswith("app"):
+#     dossier = os.path.dirname(dossier)
+# dossier = os.path.dirname(dossier)
+# if dossier not in sys.path:
+#     sys.path.append(dossier)
+from app.utils import utils
+from app.config import Config
 
-    dossier = os.path.dirname(os.path.abspath(__file__))
-    while not dossier.endswith("app"):
-        dossier = os.path.dirname(dossier)
-    dossier = os.path.dirname(dossier)
-    if dossier not in sys.path:
-        sys.path.append(dossier)
-import app.utils.utils as utils
+
+
+word_list = ["OpenClassrooms", "Salut", "GrandPy", "connais"]
+formatted_address = [
+{
+    "formatted_address": "7 Cité Paradis, 75010 Paris, France",
+    "geometry": {
+        "location": {"lat": -33.8599358, "lng": 151.2090295},
+        "viewport": {
+            "northeast": {"lat": -33.85824767010727, "lng": 151.2102470798928},
+            "southwest": {"lat": -33.86094732989272, "lng": 151.2075474201073},
+        },
+    },
+    "name": "OpenClassrooms",
+    "opening_hours": {"open_now": False, "weekday_text": []},
+    "photos": [
+        {
+            "height": 2268,
+            "html_attributions": [
+                '\u003ca href="https://maps.google.com/maps/contrib/113202928073475129698/photos"\u003eEmily Zimny\u003c/a\u003e'
+            ],
+            "photo_reference": "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
+            "width": 4032,
+        }
+    ],
+    "rating": 4.3,
+},
+{
+    "formatted_address": "7 Cité Paradis, 75010 Paris, France",
+    "geometry": {
+        "location": {"lat": -33.8599358, "lng": 151.2090295},
+        "viewport": {
+            "northeast": {"lat": -33.85824767010727, "lng": 151.2102470798928},
+            "southwest": {"lat": -33.86094732989272, "lng": 151.2075474201073},
+        },
+    },
+    "name": "Museum of Contemporary Art Australia",
+    "opening_hours": {"open_now": False, "weekday_text": []},
+    "photos": [
+        {
+            "height": 2268,
+            "html_attributions": [
+                '\u003ca href="https://maps.google.com/maps/contrib/113202928073475129698/photos"\u003eEmily Zimny\u003c/a\u003e'
+            ],
+            "photo_reference": "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
+            "width": 4032,
+        }
+    ],
+    "rating": 4.3,
+},
+]
+
+candidates = list(
+[x["name"] + " situé " + x["formatted_address"] for x in formatted_address]
+)
+
+
+
+class Test_parser:
+
+    test_entries = [
+        "Salut GrandPy ! Est-ce que tu connais l'adresse d'OpenClassrooms ?",
+        "24444 fes68 zzsrnt4 rs54eqv654 sftrts     *ù(^$^:)à'ç(k",
+    ]
+    filter_expected_results = [
+        ["Salut", "GrandPy", "connais", "adresse", "OpenClassrooms"],
+        ["24444", "fes", "68", "zzsrnt", "4", "rs", "54", "eqv", "654", "sftrts"],
+    ]
+    prioritize_expected_results = [
+        ["OpenClassrooms", "Salut", "GrandPy", "connais"],
+        ["24444", "fes", "68", "zzsrnt", "4", "rs", "54", "eqv", "654", "sftrts"],
+    ]
+
+    def test_filter(self):
+        for index, value in enumerate(Test_parser.test_entries):
+            parser = utils.Parser(value, Config.filter, "stopwords.json", "stopwords.json")
+            assert parser.filter() == 0
+            assert parser.filtered_result == Test_parser.filter_expected_results[index]
+
+    def test_prioritize(self):
+        for index, value in enumerate(Test_parser.filter_expected_results):
+            parser = utils.Parser(value, Config.filter, "stopwords.json", "stopwords.json")
+            parser.filtered_result = value
+            assert parser.prioritize() == 0
+            assert parser.prioritized_result == Test_parser.prioritize_expected_results[index]
 
 
 class Maps_MockResponse:
+    response=""
+    def __init__(self, key=""):
+        pass
+
     @staticmethod
     def Client(*arg, **kargs):
         pass
 
     @staticmethod
     def find_place(*arg, **kargs):
-        return {
-            "candidates": [
-                {
-                    "formatted_address": "7 Cité Paradis, 75010 Paris, France",
-                    "geometry": {
-                        "location": {"lat": -33.8599358, "lng": 151.2090295},
-                        "viewport": {
-                            "northeast": {
-                                "lat": -33.85824767010727,
-                                "lng": 151.2102470798928,
-                            },
-                            "southwest": {
-                                "lat": -33.86094732989272,
-                                "lng": 151.2075474201073,
+        if Maps_MockResponse.response == "ok_1_candidate":
+            return {
+                "candidates": [
+                    {
+                        "formatted_address": "7 Cité Paradis, 75010 Paris, France",
+                        "geometry": {
+                            "location": {"lat": -33.8599358, "lng": 151.2090295},
+                            "viewport": {
+                                "northeast": {
+                                    "lat": -33.85824767010727,
+                                    "lng": 151.2102470798928,
+                                },
+                                "southwest": {
+                                    "lat": -33.86094732989272,
+                                    "lng": 151.2075474201073,
+                                },
                             },
                         },
-                    },
-                    "name": "Museum of Contemporary Art Australia",
-                    "opening_hours": {"open_now": False, "weekday_text": []},
-                    "photos": [
-                        {
-                            "height": 2268,
-                            "html_attributions": [
-                                '\u003ca href="https://maps.google.com/maps/contrib/113202928073475129698/photos"\u003eEmily Zimny\u003c/a\u003e'
-                            ],
-                            "photo_reference": "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
-                            "width": 4032,
-                        }
-                    ],
-                    "rating": 4.3,
-                }
-            ],
-            "debug_log": {"line": []},
-            "status": "OK",
-        }
+                        "name": "Museum of Contemporary Art Australia",
+                        "opening_hours": {"open_now": False, "weekday_text": []},
+                        "photos": [
+                            {
+                                "height": 2268,
+                                "html_attributions": [
+                                    '\u003ca href="https://maps.google.com/maps/contrib/113202928073475129698/photos"\u003eEmily Zimny\u003c/a\u003e'
+                                ],
+                                "photo_reference": "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
+                                "width": 4032,
+                            }
+                        ],
+                        "rating": 4.3,
+                    }
+                ],
+                "debug_log": {"line": []},
+                "status": "OK",
+            }
 
-
-class Maps_MockResponse2:
-    @staticmethod
-    def Client(*arg, **kargs):
-        pass
-
-    @staticmethod
-    def find_place(*arg, **kargs):
-        return {"candidates": [], "status": "NO_RESULTS"}
-
-
-class Maps_MockResponse3:
-    @staticmethod
-    def Client(*arg, **kargs):
-        pass
-
-    @staticmethod
-    def find_place(*arg, **kargs):
-        return {
+        elif Maps_MockResponse.response == "ok_several_candidates":
+            return {
             "candidates": [
                 {
                     "formatted_address": "7 Cité Paradis, 75010 Paris, France",
@@ -142,15 +215,33 @@ class Maps_MockResponse3:
             "status": "OK",
         }
 
+        elif Maps_MockResponse.response == "no_results":
+            return {"candidates": [], "status": "NO_RESULTS"}
 
-class Maps_MockResponse4:
-    @staticmethod
-    def Client(*arg, **kargs):
-        pass
 
-    @staticmethod
-    def find_place(*arg, **kargs):
-        return {"candidates": [], "debug_log": {"line": []}, "status": "NO_RESULTS"}
+class Test_Gmap_address:
+
+    def gmaps_mock_get(self, response_type):
+            Maps_MockResponse.response = response_type
+            return Maps_MockResponse
+
+    def test_find_address(self, monkeypatch):
+        expected = "7 Cité Paradis, 75010 Paris, France"
+
+        monkeypatch.setattr("app.utils.utils.googlemaps.Client", self.gmaps_mock_get("ok_1_candidate"))
+        address=utils.Gmap_address(word_list, "xxx")
+        assert address.find_address() == 0
+        assert address.formatted_address == expected
+        assert address.location == {"lat": -33.8599358, "lng": 151.2090295}
+
+        monkeypatch.setattr("app.utils.utils.googlemaps.Client", self.gmaps_mock_get("no_results"))
+        address=utils.Gmap_address(word_list, "xxx")
+        assert address.find_address() == 1
+        assert address.formatted_address == ""
+
+        monkeypatch.setattr("app.utils.utils.googlemaps.Client", self.gmaps_mock_get("ok_several_candidates"))
+        address=utils.Gmap_address(word_list, "xxx")
+        assert address.find_address() == candidates
 
 
 class Wiki_MockResponse:
@@ -217,172 +308,139 @@ class Wiki_MockResponse:
             }
 
 
+class Test_wiki:
+    
+    def wikimock_get(self):
+        return Wiki_MockResponse()
+    
+    def test_wikiself(self, monkeypatch):
+        monkeypatch.setattr(requests, "Session", self.wikimock_get)
+        wiki = utils.Wiki_search({"lat": -33.8599358, "lng": 151.2090295}, 500)
+        assert wiki.find_wiki_content() == 0
+        assert ("A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door. Plus d'informations ici <a href='https://en.wikipedia.org/wiki/Pet_door'>https://en.wikipedia.org/wiki/Pet_door</a>"
+            in wiki.wiki_text
+        )
+
+
+class Mock_parser:
+
+    return_type = ""
+
+    def __init__(self,*args,**kwargs):
+        self.prioritized_result = ["XXX", "YYY", "ZZZ"]
+    
+    def filter(self, *args, **kwargs):
+        if Mock_parser.return_type == "pass":
+            return 0
+        else:
+            return 1
+    def prioritize(self, *args, **kwargs):
+        if Mock_parser.return_type == "pass":
+            return 0
+        else:
+            return 1
+
+class Mock_Gmap_address:
+
+    return_type = ""
+
+    def __init__(self,*args,**kwargs):
+        self.prioritized_result = ["XXX", "YYY", "ZZZ"]
+        self.location = {"lat": -33.8599358, "lng": 151.2090295}
+        self.formatted_address = "7 Cité Paradis, 75010 Paris, France"
+
+    def find_address(self, *args, **kwargs):
+        if Mock_Gmap_address.return_type == "pass":
+            return 0
+        elif Mock_Gmap_address.return_type == "several_results":
+            return candidates
+        else:
+            return 1
+
+class Mock_wiki:
+
+    return_type=""
+
+    def __init__(self,*args,**kwargs):
+        self.wiki_text = "an interesting thing about location with a random into and a link to the wiki page!"
+    
+    def find_wiki_content(self):
+        if Mock_wiki.return_type == "pass":
+            return 0
+        else:
+            self.wiki_text = "Nooooooooothing found about this place, or failed"
+            return 1
+
+
+
 class Test_request:
 
-    formatted_address = [
-        {
-            "formatted_address": "7 Cité Paradis, 75010 Paris, France",
-            "geometry": {
-                "location": {"lat": -33.8599358, "lng": 151.2090295},
-                "viewport": {
-                    "northeast": {"lat": -33.85824767010727, "lng": 151.2102470798928},
-                    "southwest": {"lat": -33.86094732989272, "lng": 151.2075474201073},
-                },
-            },
-            "name": "OpenClassrooms",
-            "opening_hours": {"open_now": False, "weekday_text": []},
-            "photos": [
-                {
-                    "height": 2268,
-                    "html_attributions": [
-                        '\u003ca href="https://maps.google.com/maps/contrib/113202928073475129698/photos"\u003eEmily Zimny\u003c/a\u003e'
-                    ],
-                    "photo_reference": "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
-                    "width": 4032,
-                }
-            ],
-            "rating": 4.3,
-        },
-        {
-            "formatted_address": "7 Cité Paradis, 75010 Paris, France",
-            "geometry": {
-                "location": {"lat": -33.8599358, "lng": 151.2090295},
-                "viewport": {
-                    "northeast": {"lat": -33.85824767010727, "lng": 151.2102470798928},
-                    "southwest": {"lat": -33.86094732989272, "lng": 151.2075474201073},
-                },
-            },
-            "name": "Museum of Contemporary Art Australia",
-            "opening_hours": {"open_now": False, "weekday_text": []},
-            "photos": [
-                {
-                    "height": 2268,
-                    "html_attributions": [
-                        '\u003ca href="https://maps.google.com/maps/contrib/113202928073475129698/photos"\u003eEmily Zimny\u003c/a\u003e'
-                    ],
-                    "photo_reference": "CmRaAAAAfxSORBfVmhZcERd-9eC5X1x1pKQgbmunjoYdGp4dYADIqC0AXVBCyeDNTHSL6NaG7-UiaqZ8b3BI4qZkFQKpNWTMdxIoRbpHzy-W_fntVxalx1MFNd3xO27KF3pkjYvCEhCd--QtZ-S087Sw5Ja_2O3MGhTr2mPMgeY8M3aP1z4gKPjmyfxolg",
-                    "width": 4032,
-                }
-            ],
-            "rating": 4.3,
-        },
-    ]
-    candidates = list(
-        [x["name"] + " au " + x["formatted_address"] for x in formatted_address]
-    )
+    def get_parser_mock(self, return_type): 
+        Mock_parser.return_type = return_type
+        return Mock_parser
+    
+    def get_gmap_adress_mock(self, return_type):
+        Mock_Gmap_address.return_type = return_type
+        return Mock_Gmap_address
+    
+    def get_wiki_mock(self, return_type):
+        Mock_wiki.return_type = return_type
+        return Mock_wiki
 
-    @pytest.fixture(scope="class")
-    def setup_function(self, request):
-        r = utils.Request(
-            "Salut GrandPy ! Est-ce que tu connais l'adresse d'OpenClassrooms ?"
-        )
-        return r
 
-    def mock_get(self, *args, **kargs):
-        return Maps_MockResponse()
+    def test_process_pass(self, monkeypatch):
+        monkeypatch.setattr("app.utils.utils.Parser", self.get_parser_mock("pass"))
+        monkeypatch.setattr("app.utils.utils.Gmap_address", self.get_gmap_adress_mock("pass"))
+        monkeypatch.setattr("app.utils.utils.Wiki_search", self.get_wiki_mock("pass"))
+        request = utils.Request("bla bla")
 
-    def mock_get2(self, *args, **kargs):
-        return Maps_MockResponse2()
-
-    def mock_get3(self, *args, **kargs):
-        return Maps_MockResponse3()
-
-    def wikimock_get(self, *args, **kargs):
-        return Wiki_MockResponse()
-
-    def mock_get4(self, *args, **kargs):
-        return Maps_MockResponse4()
-
-    def test_filter(self):
-        test_phrases = [
-            "Salut GrandPy ! Est-ce que tu connais l'adresse d'OpenClassrooms ?",
-            "24444 fes68 zzsrnt4 rs54eqv654 sftrts     *ù(^$^:)à'ç(k",
-        ]
-        expected = [
-            ["Salut", "GrandPy", "connais", "adresse", "OpenClassrooms"],
-            ["24444", "fes", "68", "zzsrnt", "4", "rs", "54", "eqv", "654", "sftrts"],
-        ]
-        for index, value in enumerate(test_phrases):
-            x = utils.Request(value)
-            assert x.filter() == 0
-            assert x.filtered_result == expected[index]
-
-    def test_prioritize(self):
-        filter_results = [
-            ["Salut", "GrandPy", "connais", "adresse", "OpenClassrooms"],
-            ["24444", "fes", "68", "zzsrnt", "4", "rs", "54", "eqv", "654", "sftrts"],
-        ]
-        expected = [
-            ["OpenClassrooms", "Salut", "GrandPy", "connais"],
-            ["24444", "fes", "68", "zzsrnt", "4", "rs", "54", "eqv", "654", "sftrts"],
-        ]
-        for index, value in enumerate(filter_results):
-            x = utils.Request("")
-            x.filtered_result = value
-            assert x.prioritize() == 0
-            assert x.prioritized_result == expected[index]
-
-    def test_find_address(self, monkeypatch):
-        expected = "7 Cité Paradis, 75010 Paris, France"
-
-        monkeypatch.setattr(googlemaps, "Client", self.mock_get)
-        x = utils.Request("")
-        x.prioritized_result = ["OpenClassrooms", "Salut", "GrandPy", "connais"]
-        x.find_address()
-        print(x.formatted_address)
-        assert x.find_address() == 0
-        assert x.formatted_address == expected
-        assert x.location == {"lat": -33.8599358, "lng": 151.2090295}
-
-        monkeypatch.setattr(googlemaps, "Client", self.mock_get2)
-        x = utils.Request("")
-        x.prioritized_result = ["OpenClassrooms", "Salut", "GrandPy", "connais"]
-        x.find_address()
-        assert x.find_address() == 1
-        assert x.formatted_address == ""
-
-        monkeypatch.setattr(googlemaps, "Client", self.mock_get3)
-        x = utils.Request("")
-        x.prioritized_result = ["OpenClassrooms", "Salut", "GrandPy", "connais"]
-        x.find_address()
-        assert x.find_address() == self.candidates
-
-    def test_wikiself(self, monkeypatch, setup_function):
-
-        monkeypatch.setattr(requests, "Session", self.wikimock_get)
-        setup_function.location = {"lat": -33.8599358, "lng": 151.2090295}
-        assert setup_function.find_wiki_content() == 0
-        assert (
-            setup_function.wiki
-            == "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door. Plus d'informations ici https://en.wikipedia.org/wiki/Pet_door"
-        )
-        setup_function.location = {}
-        setup_function.wiki = ""
-
-    def test_process(self, monkeypatch, setup_function):
-        monkeypatch.setattr(googlemaps, "Client", self.mock_get3)
-        assert setup_function.process() == {
-            "status": "SEVERAL_ADRESS",
-            "adresses_answer": "j'ai plusieurs idées, peux-tu me préciser le nom et l'adresse que tu veux trouver ?"
-            + " "
-            + ", ".join(self.candidates),
-            "wiki_answer": "",
-            "coordinates": {},
-        }
-
-        monkeypatch.setattr(googlemaps, "Client", self.mock_get4)
-        assert setup_function.process() == {
-            "status": "NO_RESULTS",
-            "adresses_answer": "je n'arrive pas à te comprendre PARLES PLUS FORT !!!",
-            "wiki_answer": "",
-            "coordinates": {},
-        }
-
-        monkeypatch.setattr(googlemaps, "Client", self.mock_get)
-        monkeypatch.setattr(requests, "Session", self.wikimock_get)
-        assert setup_function.process() == {
+        assert request.process() == {
             "status": "OK",
-            "adresses_answer": "l'adresse est la suivante : 7 Cité Paradis, 75010 Paris, France",
-            "wiki_answer": "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door. Plus d'informations ici https://en.wikipedia.org/wiki/Pet_door",
+            "adresses_answer": "A mon avis l'adresse est la suivante : 7 Cité Paradis, 75010 Paris, France",
+            "wiki_answer": "an interesting thing about location with a random into and a link to the wiki page!",
             "coordinates": {"lat": -33.8599358, "lng": 151.2090295},
-        }
+            }
+    
+    def process_several_results(self, monkeypatch):
+        monkeypatch.setattr("app.utils.utils.Parser", self.get_parser_mock("pass"))
+        monkeypatch.setattr("app.utils.utils.Gmap_address", self.get_gmap_adress_mock("several_results"))
+        monkeypatch.setattr("app.utils.utils.Wiki_search", self.get_wiki_mock("pass"))
+        
+        request = utils.Request("bla bla")
+        result = request.process()
+        assert result["status"] == "Several_results"
+        assert result()["wiki_answer"] == ""
+        assert request.process()["coordinates"] == {}
+        assert type(result["adresses_answer"]) == "j'ai plusieurs idées, peux-tu me préciser le nom et l'adresse que tu veux trouver ?"+ " "+ ", ".join(candidates)
+    
+    def process_fail(self,monkeypatch):
+        request = utils.Request("bla bla")
+        monkeypatch.setattr("app.utils.utils.Parser", self.get_parser_mock("fail"))
+        result = request.process()
+        assert result["status"] == "NOT_PROCESSED"
+        assert result["wiki_answer"] == ""
+        assert result["coordinates"] == {}
+        assert type(result["adresses_answer"]) == type(str(""))
+        
+        monkeypatch.setattr("app.utils.utils.Parser", self.get_parser_mock("pass"))
+        monkeypatch.setattr("app.utils.utils.Gmap_address", self.get_gmap_adress_mock("fail"))  
+        result = request.process()
+        assert result["status"] == "NO_RESULTS"
+        assert result["wiki_answer"] == ""
+        assert result["coordinates"] == {}
+        assert type(result["adresses_answer"]) == type(str(""))
+
+        monkeypatch.setattr("app.utils.utils.Parser", self.get_parser_mock("pass"))
+        monkeypatch.setattr("app.utils.utils.Gmap_address", self.get_gmap_adress_mock("several_results"))
+        monkeypatch.setattr("app.utils.utils.Wiki_search", self.get_wiki_mock("fail"))
+
+        result = request.process()
+        assert result["status"] == "OK_WIKI_FAILED"
+        assert result["wiki_answer"] == "Nooooooooothing found about this place, or failed"
+        assert result["coordinates"] == {"lat": -33.8599358, "lng": 151.2090295}
+        assert result["adresses_answer"] == "A mon avis l'adresse est la suivante : 7 Cité Paradis, 75010 Paris, France"
+
+        
+
+
+
