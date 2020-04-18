@@ -16,23 +16,23 @@
             <hr class="my-4">
             <p>Mais appuie fort sur ton clavier, il entend très mal !</p>
         </header>
-        <section class="container">
-            <div id="dialog">
+        <section class="container col-sm-10 col-md-10 col-lg-8">
+            <div id="dialog" class="row justify-content-center">
             </div>   
             <div class="row">
-                <div class="col-sm-10 col-md-10 col-lg-9">
+                <div class="col">
                 <form class="well" id="question">
                     <fieldset>
-                    <div class="row">
+                    <div class="row justify-content-center">
                         <div class="col">                                   
                         <textarea placeholder="écrivez ici !" id="textarea" class="form-control" rows="2" name=text></textarea>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-6">   
+                    <div class="row justify-content-center">
+                        <div class="col-sm-6 text-center">   
                         <button id="send" class="btn btn-primary pull" type="submit" onsubmit="return false">Envoyer</button>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-6 text-center">
                             <div class="spinner-border text-primary" role="status">
                             <span class="sr-only">Loading...</span>
                             </div>
@@ -42,14 +42,24 @@
                 </form>                                        
                 </div>
             </div>   
-            <div id="gmap" class="row">
+            <div id="gmap" class="row justify-content-center">
                 <div id="map" class=col>
                 </div>
             </div>
-            
+            <footer>
+                <div class="row justify-content-center ">
+                    <div class="col-1 text-center">
+                    <a href="https://www.github.com/paulgirmes"><img src="{{url_for('static', filename='img/GitHub-Mark.png')}}" alt="GitHub" title="Mon code sur GitHub !" /></a>
+                    </div>
+                    <div class="col-1 text-center">
+                    <a href="https://fr.linkedin.com/in/paul-girmes-08248659"><img src="{{url_for('static', filename='img/LI.png')}}" alt="github" title="Ma page Linkedin" /></a>
+                    </div>
+                    <div class="col-1 text-center">
+                    <a href="mailto:contact@paulgirmes.com"><img src="{{url_for('static', filename='img/mail.png')}}" alt="mail" title="Cliquez pour me contacter !" /></a>
+                    </div>
+                </div>
+            </footer>
         </section>
-        <footer>
-        </footer>
         <script
             src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="

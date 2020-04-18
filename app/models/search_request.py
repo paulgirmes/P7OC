@@ -23,6 +23,7 @@ class Request:
                 "coordinates": {}
             } 
     """
+
     def __init__(self, text):
         self.__status = "NOT_PROCESSED"
         self.text_to_process = text
@@ -132,6 +133,7 @@ class Parser:
     Used to parse and prioritize any string (self.text_to_parse) given a regex (self.regex), 
     stopwords (stopwords_file_Json) and an optional priority words file (priority_words_file_Json used by self.prioritize) both of the JSON format
     """
+
     def __init__(
         self, text_to_parse, regex, stopwords_file_Json, priority_words_file_Json=None
     ):
@@ -149,7 +151,7 @@ class Parser:
         returns 0 and affect the result in the form af a list in self.filtered_result in case of success.
         returns 1 in case of any failure
         """
-        
+
         try:
             result = re.findall(self.regex, self.text_to_parse)
             stopwords = set()
@@ -217,6 +219,7 @@ class Gmap_address:
     used to find an address and a location from a give word list,
     a google-maps valid API key must also be given.
     """
+
     def __init__(self, word_list, api_key):
         self.word_list = word_list
         self.formatted_address = ""
@@ -275,6 +278,7 @@ class Wiki_search:
     """
     used to find an information about a location (self.location), a search radius must be given at init of instance
     """
+
     def __init__(self, coordinates, search_radius_m, json_file):
         self.location = coordinates
         self.wiki_text = ""
@@ -328,7 +332,9 @@ class Wiki_search:
                 },
             )
             with open(
-                os.path.dirname(os.path.abspath(__file__)) + "\\"+self.default_text_file,
+                os.path.dirname(os.path.abspath(__file__))
+                + "\\"
+                + self.default_text_file,
                 encoding="utf8",
             ) as f:
                 mots = json.load(f)
@@ -346,7 +352,9 @@ class Wiki_search:
             return 0
         except:
             with open(
-                os.path.dirname(os.path.abspath(__file__)) + "\\"+self.default_text_file,
+                os.path.dirname(os.path.abspath(__file__))
+                + "\\"
+                + self.default_text_file,
                 encoding="utf8",
             ) as f:
                 mots = json.load(f)

@@ -228,7 +228,8 @@ class Test_Gmap_address:
         expected = "7 Cité Paradis, 75010 Paris, France"
 
         monkeypatch.setattr(
-            "app.models.search_request.googlemaps.Client", self.gmaps_mock_get("ok_1_candidate")
+            "app.models.search_request.googlemaps.Client",
+            self.gmaps_mock_get("ok_1_candidate"),
         )
         address = search_request.Gmap_address(word_list, "xxx")
         assert address.find_address() == 0
@@ -236,7 +237,8 @@ class Test_Gmap_address:
         assert address.location == {"lat": -33.8599358, "lng": 151.2090295}
 
         monkeypatch.setattr(
-            "app.models.search_request.googlemaps.Client", self.gmaps_mock_get("no_results")
+            "app.models.search_request.googlemaps.Client",
+            self.gmaps_mock_get("no_results"),
         )
         address = search_request.Gmap_address(word_list, "xxx")
         assert address.find_address() == 1
@@ -320,7 +322,9 @@ class Test_wiki:
 
     def test_wikiself(self, monkeypatch):
         monkeypatch.setattr(requests, "Session", self.wikimock_get)
-        wiki = search_request.Wiki_search({"lat": -33.8599358, "lng": 151.2090295}, 500, "stopwords.json")
+        wiki = search_request.Wiki_search(
+            {"lat": -33.8599358, "lng": 151.2090295}, 500, "stopwords.json"
+        )
         assert wiki.find_wiki_content() == 0
         assert (
             "A pet door or pet flap (also referred to in more specific terms, such as cat flap, cat door, dog door, or doggy door) is a small opening to allow pets to enter and exit a building on their own without needing a person to open the door. Plus d'informations ici <a href='https://fr.wikipedia.org/wiki/Pet_door'>https://fr.wikipedia.org/wiki/Pet_door</a>"
@@ -395,11 +399,15 @@ class Test_request:
         return Mock_wiki
 
     def test_process_pass(self, monkeypatch):
-        monkeypatch.setattr("app.models.search_request.Parser", self.get_parser_mock("pass"))
+        monkeypatch.setattr(
+            "app.models.search_request.Parser", self.get_parser_mock("pass")
+        )
         monkeypatch.setattr(
             "app.models.search_request.Gmap_address", self.get_gmap_adress_mock("pass")
         )
-        monkeypatch.setattr("app.models.search_request.Wiki_search", self.get_wiki_mock("pass"))
+        monkeypatch.setattr(
+            "app.models.search_request.Wiki_search", self.get_wiki_mock("pass")
+        )
         request = search_request.Request("bla bla")
 
         assert request.process() == {
@@ -410,11 +418,16 @@ class Test_request:
         }
 
     def process_several_results(self, monkeypatch):
-        monkeypatch.setattr("app.models.search_request.Parser", self.get_parser_mock("pass"))
         monkeypatch.setattr(
-            "app.models.search_request.Gmap_address", self.get_gmap_adress_mock("several_results")
+            "app.models.search_request.Parser", self.get_parser_mock("pass")
         )
-        monkeypatch.setattr("app.models.search_request.Wiki_search", self.get_wiki_mock("pass"))
+        monkeypatch.setattr(
+            "app.models.search_request.Gmap_address",
+            self.get_gmap_adress_mock("several_results"),
+        )
+        monkeypatch.setattr(
+            "app.models.search_request.Wiki_search", self.get_wiki_mock("pass")
+        )
 
         request = search_request.Request("bla bla")
         result = request.process()
@@ -429,14 +442,18 @@ class Test_request:
 
     def process_fail(self, monkeypatch):
         request = search_request.Request("bla bla")
-        monkeypatch.setattr("app.models.search_request.Parser", self.get_parser_mock("fail"))
+        monkeypatch.setattr(
+            "app.models.search_request.Parser", self.get_parser_mock("fail")
+        )
         result = request.process()
         assert result["status"] == "NOT_PROCESSED"
         assert result["wiki_answer"] == ""
         assert result["coordinates"] == {}
         assert type(result["adresses_answer"]) == type(str(""))
 
-        monkeypatch.setattr("app.models.search_request.Parser", self.get_parser_mock("pass"))
+        monkeypatch.setattr(
+            "app.models.search_request.Parser", self.get_parser_mock("pass")
+        )
         monkeypatch.setattr(
             "app.models.search_request.Gmap_address", self.get_gmap_adress_mock("fail")
         )
@@ -446,11 +463,16 @@ class Test_request:
         assert result["coordinates"] == {}
         assert type(result["adresses_answer"]) == type(str(""))
 
-        monkeypatch.setattr("app.models.search_request.Parser", self.get_parser_mock("pass"))
         monkeypatch.setattr(
-            "app.models.search_request.Gmap_address", self.get_gmap_adress_mock("several_results")
+            "app.models.search_request.Parser", self.get_parser_mock("pass")
         )
-        monkeypatch.setattr("app.models.search_request.Wiki_search", self.get_wiki_mock("fail"))
+        monkeypatch.setattr(
+            "app.models.search_request.Gmap_address",
+            self.get_gmap_adress_mock("several_results"),
+        )
+        monkeypatch.setattr(
+            "app.models.search_request.Wiki_search", self.get_wiki_mock("fail")
+        )
 
         result = request.process()
         assert result["status"] == "OK_WIKI_FAILED"

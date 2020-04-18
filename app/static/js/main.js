@@ -41,13 +41,13 @@ function question(text)
         var newchain = $("#textarea").val();
         newchain = newchain.replace(reg, " ");
 
-        $("#dialog").prepend(question(newchain));
+        $("#dialog").append(question(newchain));
         $("#map2").hide(600);
         $("#map2").remove();
         $("#textarea").hide(600);
         $(".btn").hide(600);
         $(".spinner-border").show(600);
-        //sending request to server if answer status is ok add the answwer map and the wiki,
+        //sending request to server : if answer status is ok add the answwer map and the wiki,
         //else only add the answer from server
         $.ajax(
             {
@@ -72,15 +72,15 @@ function question(text)
                         {
                         position: {lat: answer_obj.coordinates.lat, lng: answer_obj.coordinates.lng}, map: map2
                         });
-                    $("#dialog").prepend(answer(answer_obj.adresses_answer));
+                    $("#dialog").append(answer(answer_obj.adresses_answer));
                     setTimeout(()=>
                         {
-                        $("#dialog").prepend(answer(answer_obj.wiki_answer))
+                        $("#dialog").append(answer(answer_obj.wiki_answer))
                         },5000)
                     }
                 else
                     {
-                    $("#dialog").prepend(answer(answer_obj.adresses_answer));
+                    $("#dialog").append(answer(answer_obj.adresses_answer));
                     }
                 
                 },
