@@ -21,10 +21,10 @@ def question():
     answer = Request(request.form["text"])
     try:
         return json.dumps(answer.process())
-    except:
+    except Exception as e:
         return json.dumps(
             {
                 "status": "NOK",
-                "adresses_answer": "OUPS ! , un Problème est survenu dans le traitement des données",
+                "adresses_answer": "OUPS ! , un Problème est survenu dans le traitement des données : "+ e.__traceback__
             }
         )
