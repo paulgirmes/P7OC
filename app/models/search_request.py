@@ -105,7 +105,7 @@ class Request:
         }  
         """
         with open(
-            os.path.dirname(os.path.abspath(__file__)) + "\\stopwords.json",
+            os.path.dirname(os.path.abspath(__file__)) + "/"+ json_file,
             encoding="utf8",
         ) as f:
             data = json.load(f)
