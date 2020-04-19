@@ -359,7 +359,7 @@ class Wiki_search:
                 encoding="utf8",
             ) as f:
                 mots = json.load(f)
-            self.wiki = mots["no_wiki"][random.randint(0, (len(mots["no_wiki"]) - 1))]
+            self.wiki_test = mots["no_wiki"][random.randint(0, (len(mots["no_wiki"]) - 1))]
             return 1
 
 
