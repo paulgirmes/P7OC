@@ -22,4 +22,9 @@ def question():
     try:
         return json.dumps(answer.process())
     except:
-        raise
+        return json.dumps(
+            {
+                "status": "NOK",
+                "adresses_answer": "OUPS ! , un Problème est survenu dans le traitement des données : "
+            }
+        )
