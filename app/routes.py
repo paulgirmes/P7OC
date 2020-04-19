@@ -21,8 +21,7 @@ def question():
     answer = Request(request.form["text"])
     try:
         return json.dumps(answer.process())
-    except Exception as e:
-        log(e)
+    except:
         return json.dumps(
             {
                 "status": "NOK",

@@ -156,7 +156,7 @@ class Parser:
             result = re.findall(self.regex, self.text_to_parse)
             stopwords = set()
             with open(
-                os.path.dirname(os.path.abspath(__file__)) + "\\" + self.stopwords,
+                os.path.dirname(os.path.abspath(__file__)) + "/" + self.stopwords,
                 encoding="utf8",
             ) as f:
                 data = json.load(f)
@@ -186,7 +186,7 @@ class Parser:
         results = []
         try:
             with open(
-                os.path.dirname(os.path.abspath(__file__)) + "\\" + self.priortywords,
+                os.path.dirname(os.path.abspath(__file__)) + "/" + self.priortywords,
                 encoding="utf8",
             ) as f:
                 data = json.load(f)
@@ -333,7 +333,7 @@ class Wiki_search:
             )
             with open(
                 os.path.dirname(os.path.abspath(__file__))
-                + "\\"
+                + "/"
                 + self.default_text_file,
                 encoding="utf8",
             ) as f:
@@ -353,7 +353,7 @@ class Wiki_search:
         except:
             with open(
                 os.path.dirname(os.path.abspath(__file__))
-                + "\\"
+                + "/"
                 + self.default_text_file,
                 encoding="utf8",
             ) as f:
