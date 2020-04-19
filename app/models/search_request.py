@@ -246,6 +246,7 @@ class Gmap_address:
                     input_type="textquery",
                     language="french",
                     fields=["name", "formatted_address", "geometry/location"],
+                    location_bias="ipbias"
                 )
                 if result["status"] == "OK":
                     x = len(result["candidates"])
