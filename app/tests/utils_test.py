@@ -231,7 +231,7 @@ class Test_Gmap_address:
             "app.models.search_request.googlemaps.Client",
             self.gmaps_mock_get("ok_1_candidate"),
         )
-        address = search_request.Gmap_address(word_list, "xxx")
+        address = search_request.Gmap_address(word_list, "xxx", "yyyy")
         assert address.find_address() == 0
         assert address.formatted_address == expected
         assert address.location == {"lat": -33.8599358, "lng": 151.2090295}
@@ -240,7 +240,7 @@ class Test_Gmap_address:
             "app.models.search_request.googlemaps.Client",
             self.gmaps_mock_get("no_results"),
         )
-        address = search_request.Gmap_address(word_list, "xxx")
+        address = search_request.Gmap_address(word_list, "xxx", "yyyy")
         assert address.find_address() == 1
         assert address.formatted_address == ""
 
@@ -248,7 +248,7 @@ class Test_Gmap_address:
             "app.models.search_request.googlemaps.Client",
             self.gmaps_mock_get("ok_several_candidates"),
         )
-        address = search_request.Gmap_address(word_list, "xxx")
+        address = search_request.Gmap_address(word_list, "xxx", "yyyy")
         assert address.find_address() == candidates
 
 
