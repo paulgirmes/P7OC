@@ -50,7 +50,7 @@ class Request:
         )
         if parser.filter() == 0 and parser.prioritize() == 0:
             self.__status = "PARSER_OK"
-            address = Gmap_address(parser.prioritized_result, Config.google_api)
+            address = Gmap_address(parser.prioritized_result, Config.google_api, Config.bias)
             address_return = address.find_address()
 
             if address_return == 0:
@@ -220,12 +220,13 @@ class Gmap_address:
     a google-maps valid API key must also be given.
     """
 
-    def __init__(self, word_list, api_key):
+    def __init__(self, word_list, api_key, bias_radius):
         self.word_list = word_list
         self.formatted_address = ""
         self.location = {}
         self.name = ""
         self.candidates = []
+        self.bias_radius = bias_radius
         self.api_key = api_key
 
     def find_address(self):
@@ -246,7 +247,7 @@ class Gmap_address:
                     input_type="textquery",
                     language="french",
                     fields=["name", "formatted_address", "geometry/location"],
-                    location_bias="ipbias"
+                    location_bias="circle:"+self.bias_radius
                 )
                 if result["status"] == "OK":
                     x = len(result["candidates"])
