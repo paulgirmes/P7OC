@@ -2,12 +2,11 @@ import json
 from flask import Flask
 from flask import url_for
 from app.models.search_request import Request
+from flask import request
+from flask import render_template
 from . import config
 
 app = Flask(__name__)
-from flask import request
-from flask import render_template
-
 
 @app.route("/")
 @app.route("/index")
