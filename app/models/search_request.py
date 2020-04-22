@@ -191,13 +191,13 @@ class Parser:
             ) as f:
                 data = json.load(f)
                 [words.append(item) for item in data["priority_words"]]
-            [
-                results.append(
-                    self.filtered_result[self.filtered_result.index(word) + 1]
-                )
-                for word in words
-                if word in self.filtered_result
-            ]
+            for word in words:
+                if word in self.filtered_result:
+                    i=1
+                    while i < len(self.filtered_result[self.filtered_result.index(word):len(self.filtered_result)]):
+                        results.append(self.filtered_result[self.filtered_result.index(word) + i])
+                        i+=1
+
             for item in self.filtered_result:
                 x = "".join(re.findall("(^[A-Z][a-zA-Z]+)", item))
                 if x not in results and x != "":
