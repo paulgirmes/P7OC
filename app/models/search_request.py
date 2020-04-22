@@ -50,7 +50,9 @@ class Request:
         )
         if parser.filter() == 0 and parser.prioritize() == 0:
             self.__status = "PARSER_OK"
-            address = Gmap_address(parser.prioritized_result, Config.google_api, Config.bias)
+            address = Gmap_address(
+                parser.prioritized_result, Config.google_api, Config.bias
+            )
             address_return = address.find_address()
 
             if address_return == 0:
@@ -105,7 +107,7 @@ class Request:
         }  
         """
         with open(
-            os.path.dirname(os.path.abspath(__file__)) + "/"+ json_file,
+            os.path.dirname(os.path.abspath(__file__)) + "/" + json_file,
             encoding="utf8",
         ) as f:
             data = json.load(f)
@@ -193,11 +195,20 @@ class Parser:
                 [words.append(item) for item in data["priority_words"]]
             for word in words:
                 if word in self.filtered_result:
-                    i=0
-                    words_number_after_word = len(self.filtered_result[self.filtered_result.index(word)+1:len(self.filtered_result)])
+                    i = 0
+                    words_number_after_word = len(
+                        self.filtered_result[
+                            self.filtered_result.index(word)
+                            + 1 : len(self.filtered_result)
+                        ]
+                    )
                     while i < words_number_after_word:
-                        results.append(self.filtered_result[self.filtered_result.index(word)+1 + i])
-                        i+=1
+                        results.append(
+                            self.filtered_result[
+                                self.filtered_result.index(word) + 1 + i
+                            ]
+                        )
+                        i += 1
 
             for item in self.filtered_result:
                 x = "".join(re.findall("(^[A-Z][a-zA-Z]+)", item))
@@ -248,7 +259,7 @@ class Gmap_address:
                     input_type="textquery",
                     language="french",
                     fields=["name", "formatted_address", "geometry/location"],
-                    location_bias="circle:"+self.bias_radius
+                    location_bias="circle:" + self.bias_radius,
                 )
                 if result["status"] == "OK":
                     x = len(result["candidates"])
@@ -361,7 +372,9 @@ class Wiki_search:
                 encoding="utf8",
             ) as f:
                 mots = json.load(f)
-            self.wiki_text = mots["no_wiki"][random.randint(0, (len(mots["no_wiki"]) - 1))]
+            self.wiki_text = mots["no_wiki"][
+                random.randint(0, (len(mots["no_wiki"]) - 1))
+            ]
             return 1
 
 
