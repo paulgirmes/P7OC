@@ -193,9 +193,10 @@ class Parser:
                 [words.append(item) for item in data["priority_words"]]
             for word in words:
                 if word in self.filtered_result:
-                    i=1
-                    while i < len(self.filtered_result[self.filtered_result.index(word):len(self.filtered_result)]):
-                        results.append(self.filtered_result[self.filtered_result.index(word) + i])
+                    i=0
+                    words_number_after_word = len(self.filtered_result[self.filtered_result.index(word)+1:len(self.filtered_result)])
+                    while i < words_number_after_word:
+                        results.append(self.filtered_result[self.filtered_result.index(word)+1 + i])
                         i+=1
 
             for item in self.filtered_result:
