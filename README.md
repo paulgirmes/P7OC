@@ -21,7 +21,7 @@ WEB application that allows user to ask a mini chatbot about places' location.
 
 * From the URL : <http://127.0.0.1:5000/> or an other url if deployed on the web
 
-* Asks a question about a place by writing it in the text form then submits it,
+* Ask a question about a place by writing it in the text form then submits it,
 if any answer the chatbot replies with the adress of the required place and a map
 with a marker centered on the location (from Google Maps API).
 
